@@ -93,7 +93,7 @@ resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(
 --resource.labels.policy_name="<name>"
 
 -- remove policy priority matching logs (example, explicit allow rule)
---jsonPayload.enforcedSecurityPolicy.priority="2147483646" AND -jsonPayload.enforcedSecurityPolicy.priority="2147483647"
+-jsonPayload.enforcedSecurityPolicy.priority="2147483646" AND -jsonPayload.enforcedSecurityPolicy.priority="2147483647"
 
 -- remove permitted policy outcome value
 --jsonPayload.enforcedSecurityPolicy.outcome="DENY"
