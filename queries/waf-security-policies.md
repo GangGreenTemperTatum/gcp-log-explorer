@@ -1,6 +1,27 @@
 - [Log Explorer Overview](https://cloud.google.com/logging/docs/view/logs-explorer-interface)
 - [Logging Query Language](https://cloud.google.com/logging/docs/view/logging-query-language)
 
+* Default summary fields for `resource.type:(http_load_balancer)`:
+  - httpRequest.status
+  - httpRequest.requestMethod
+  - httpRequest.latency
+  - httpRequest.userAgent
+  - httpRequest.responseSize
+
+* Recommended [Summary Field](https://cloud.google.com/logging/docs/view/logs-explorer-interface#add_summary_fields) additions for detecting high interest log patterns: (persisted in saved queries)
+  - jsonPayload.remoteIp
+  - httpRequest.requestUrl
+  - jsonPayload.enforcedSecurityPolicy.name
+  - jsonPayload.enforcedSecurityPolicy.priority
+  - jsonPayload.enforcedSecurityPolicy.outcome
+  - jsonPayload.previewSecurityPolicy.preconfiguredExprIds
+
+# View errors (I.E `400-4XX,500-5xx` HTTP error codes):
+
+```
+severity>=WARNING
+```
+
 # Generic Load Balancer Query:
 
 ```
@@ -65,10 +86,23 @@ httpRequest.referer=~"(?i)(\$|\%24)(\{|\%7b).*j.*n.*d.*i.*(\:|\%3a)"
 # You can use the previous query to scan request logs in other services by changing the value of resource.type.
 ```
 
-# :
+# CloudArmor WAF Rule Summary Except Explicit Allow:
 
 ```
-code
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(<name>)
+--resource.labels.policy_name="<name>"
+
+-- remove policy priority matching logs (example, explicit allow rule)
+--jsonPayload.enforcedSecurityPolicy.priority="2147483646" AND -jsonPayload.enforcedSecurityPolicy.priority="2147483647"
+
+-- remove permitted policy outcome value
+--jsonPayload.enforcedSecurityPolicy.outcome="DENY"
+
+timestamp >= "2023-04-13T08:00:00Z" AND timestamp <= "2023-04-15"
+--limit 50
+
+-- Observe potential data exfiltration
+-- httpRequest.responseSize>="10000"
 ```
 
 # :
