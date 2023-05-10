@@ -1,31 +1,38 @@
 - [Log Explorer Overview](https://cloud.google.com/logging/docs/view/logs-explorer-interface)
 - [Logging Query Language](https://cloud.google.com/logging/docs/view/logging-query-language)
 
-# Audit logs—all:
+# Audit logs —all:
 
 ```
 logName:"cloudaudit.googleapis.com"
 ```
 
-# Audit logs- Access Transparency (AXT):
+# Audit logs - Access Transparency (AXT):
 
 ```
 log_id("cloudaudit.googleapis.com/access_transparency")
 ```
 
-# Audit logs- Admin Activity:
+# Audit logs - Admin Activity:
 
 ```
 log_id("cloudaudit.googleapis.com/activity")
 ```
 
-# Audit logs- Data Access:
+# Audit logs - Workflow Identity Pool Activity
+- More info [here](https://medium.com/google-cloud/how-does-the-gcp-workload-identity-federation-work-with-github-provider-a9397efd7158)
+
+```
+resource.type="audited_resource" resource.labels.service="sts.googleapis.com" protoPayload.resourceName:"workloadIdentityPools/<WIF-Name>"
+```
+
+# Audit logs - Data Access:
 
 ```
 log_id("cloudaudit.googleapis.com/data_access")
 ```
 
-# Audit logs- System Event:
+# Audit logs - System Event:
 
 ```
 log_id("cloudaudit.googleapis.com/system_event")
