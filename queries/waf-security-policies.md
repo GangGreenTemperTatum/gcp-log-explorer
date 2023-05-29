@@ -2,19 +2,19 @@
 - [Logging Query Language](https://cloud.google.com/logging/docs/view/logging-query-language)
 
 * Default summary fields for `resource.type:(http_load_balancer)`:
-  - httpRequest.status
-  - httpRequest.requestMethod
-  - httpRequest.latency
-  - httpRequest.userAgent
-  - httpRequest.responseSize
+  - `httpRequest.status`
+  - `httpRequest.requestMethod`
+  - `httpRequest.latency`
+  - `httpRequest.userAgent`
+  - `httpRequest.responseSize`
 
 * Recommended [Summary Field](https://cloud.google.com/logging/docs/view/logs-explorer-interface#add_summary_fields) additions for detecting high interest log patterns: (persisted in saved queries)
-  - jsonPayload.remoteIp
-  - httpRequest.requestUrl
-  - jsonPayload.enforcedSecurityPolicy.name
-  - jsonPayload.enforcedSecurityPolicy.priority
-  - jsonPayload.enforcedSecurityPolicy.outcome
-  - jsonPayload.previewSecurityPolicy.preconfiguredExprIds
+  - `jsonPayload.remoteIp`
+  - `httpRequest.requestUrl`
+  - `jsonPayload.enforcedSecurityPolicy.name`
+  - `jsonPayload.enforcedSecurityPolicy.priority`
+  - `jsonPayload.enforcedSecurityPolicy.outcome`
+  - `jsonPayload.previewSecurityPolicy.preconfiguredExprIds`
 
 # View errors (I.E `400-4XX,500-5xx` HTTP error codes):
 
@@ -54,6 +54,19 @@ httpRequest.request_url:"phpmyadmin"
 resource.type="http_load_balancer"
 jsonPayload.statusDetails="denied_by_security_policy"
 ```
+
+# Example - Blocked Countries (502) Security Policies Actively Blocking:
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(<security-policy-name>)
+jsonPayload.enforcedSecurityPolicy.priority="<security-policy-id>"
+timestamp>="2023-05-25T00:00:00Z" AND timestamp<="2023-07-01T00:02:00Z"
+httpRequest.status="502"
+```
+
+- - Follow-up verify the "`remoteIP`" within the payload is geo-situated correctly within GCP's threat intel
+
+`whois <ipv4|ipv6> | grep country`
 
 # Security Policies Preview (Would be Denied by CloudArmor):
 
