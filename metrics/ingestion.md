@@ -10,6 +10,8 @@
 
 1. Go into the `CODE EDITOR` pane and use the query language
 
+![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/6072417d-1964-4f16-8c0e-7b4b7353d62a)
+
 ```
 fetch global
 | metric 'logging.googleapis.com/billing/bytes_ingested'
