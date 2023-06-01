@@ -52,3 +52,15 @@ fetch global
 - I personally like the numerical chart to display this example as drilling-down by GCE Service enabled (I.E `metric.resource_type`)
 
 ![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/d99768a8-130c-49aa-a251-a232b510b9cf)
+
+
+- The **metric** is [global](https://cloud.google.com/monitoring/api/resources#tag_global) and only has `project_id`  as a field
+- I can't see any guidance to go through the "Log Ingestion Analysis" page and see by resource instance... it only has by resource type.
+- You then need to then go into the actual Logs Explorer and see the timeseries for log entries of that specific type
+
+![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/78b54dea-1133-4983-a25c-0f8e65789236)
+
+![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/d6bd01fb-5b12-4f3f-93a4-681f930a7f3f)
+
+- I think the billing metric can't be super granular because it would in itself be very high data point count potentially costing a lot of "resources" to track that way
+- So the billing side uses just the usual product category and `project_id` as data point metas
