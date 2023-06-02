@@ -19,6 +19,8 @@ In this example, I use the GCS Network Security Policy resource for CloudArmor W
 
 ![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/acc9c2a5-b8d1-4989-b96e-ad7a23301211)
 
+## Creating the Base Logging Query to Build From:
+
 - Therefore, this determines that metadata (via `labels`) only included by default are mainly related to `request_count`
 - We want to dig further and provide metrics and dashboards to give us insight
 - Using the [Log Metric Syntax doc](https://cloud.google.com/logging/docs/view/logging-query-language) we can build an advanced query to pull in the specific data we want to monitor:
@@ -28,16 +30,25 @@ LOGGING QUERY INSERT HERE
 ```
 
 - Be as specific as possible to reduce ingestion costs here
-- - Filter for only specific metrics you want to ingest
-- - Where you do want to ingest, be as specific as possible (I.E: filter ipv4/ipv6 ranges, status code ranges) etc.
+  - Define exactly what you look to monitor/report and alert on 
+  - Filter for only specific metrics you want to ingest
+  - Where you do want to ingest, be as specific as possible (I.E: filter srcip/dstip ranges, status code ranges) etc.
+
+
+## Creating the Metric from the Logging Query
 
 - Either [creating a Logging Metric with Terraform](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/logging_metric) or from the Log Explorer sub-link.
+- Here is an example using the above logging query in `MQL` syntax
 
 ```
-LOGGING QUERY INSERT HERE
+METRIC SYNTAX INSERT HERE
 ```
 
 <SNIP!>
+
+- GCP supports both [MQL](https://cloud.google.com/monitoring/mql/examples) as well as [PromQL](https://cloud.google.com/monitoring/promql) query language for metrics
+
+## Creating the Dashboard from the Metric
 
 - Then in Metrics Explorer or Dashboards or any other system that refers to metrics, you should be able to search by the "name" you get. The metrics for log-based metrics aren't instant (they can take awhile to appear and to backfill old data) so turn off the "show only active resources" as needed
 
