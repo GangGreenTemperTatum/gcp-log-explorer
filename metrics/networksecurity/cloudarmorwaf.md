@@ -26,8 +26,40 @@ In this example, I use the GCS Network Security Policy resource for CloudArmor W
 - Using the [Log Metric Syntax doc](https://cloud.google.com/logging/docs/view/logging-query-language) we can build an advanced query to pull in the specific data we want to monitor:
 
 ```
-LOGGING QUERY INSERT HERE
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(<security-policy-name>)
+
+-- httpRequest --
+-- Filter anything not RFC1918 CIDR ranges for remoteIP
+NOT (ip_in_net(httpRequest.remoteIp,"10.0.0.0/8") OR ip_in_net(httpRequest.remoteIp,"192.168.0.0/16") OR ip_in_net(httpRequest.remoteIp,"80.76.0.0/16"))
+-- Filter RFC1918 CIDR ranges for serverIP
+(ip_in_net(httpRequest.serverIp,"10.0.0.0/8") OR ip_in_net(httpRequest.serverIp,"192.168.0.0/16") OR ip_in_net(httpRequest.serverIp,"80.76.0.0/16"))
+-- Include all Requested URLs, not the
+httpRequest.requestUrl=~".*"
+-- Filter Success, Client Errors and Server Errors
+httpRequest.status=200 OR httpRequest.status>=400 AND httpRequest.status<=599
+-- Include all User Agents
+httpRequest.userAgent=~".*"
+
+-- enforcedSecurityPolicy --
+-- Include the security policy enforced action configured and outcome
+jsonPayload.enforcedSecurityPolicy.configuredAction=~".*" -- Configured action of traffic as per matching rule
+jsonPayload.enforcedSecurityPolicy.outcome=~".*" -- Actual representation of traffic outcome
+jsonPayload.enforcedSecurityPolicy.name=~".*" -- Matching Security Policy name, not matching Rule description
+jsonPayload.enforcedSecurityPolicy.priority>=1 AND jsonPayload.enforcedSecurityPolicy.priority<=2147483647 -- Actual matching Rule ID
+
+-- previewSecurityPolicy --
+-- Include the PREVIEW security policy which would have been enforced and outcome
+jsonPayload.previewSecurityPolicy.configuredAction=~".*" -- Configured action for rule in PREVIEW=true mode
+jsonPayload.previewSecurityPolicy.priority>=1 AND jsonPayload.previewSecurityPolicy.priority<=2147483647 -- Hypothetical matching Rule ID of traffic for rule in PREVIEW=true mode
+jsonPayload.previewSecurityPolicy.outcome=~".*" -- Hypothetical outcome of traffic for rule in PREVIEW=true mode
+jsonPayload.previewSecurityPolicy.matchedFieldValue=~".*" -- What ARGUMENT triggered this rule
+jsonPayload.previewSecurityPolicy.preconfiguredExprIds=~".*" -- What syntax or CRS rule within the rule forced the match of this traffic
+
+-- Use a timestamp if needed to gather historic logs
+-- timestamp>="2023-07-01T00:00:01Z" AND timestamp<="2023-07-01T23:59:00Z"
 ```
+
+This means, through a metric we can now pull these metadata endpoints into a dashboard
 
 - Be as specific as possible to reduce ingestion costs here
   - Define exactly what you look to monitor/report and alert on 
