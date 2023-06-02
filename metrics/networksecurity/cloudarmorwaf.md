@@ -3,7 +3,7 @@
 In this example, I use the GCS Network Security Policy resource for CloudArmor WAF
 
 - Default metrics are not billed in GCS
-- Custom Metrics (which can be built from the Log Explorer) are billed based on ingestion
+- Custom Metrics (which can be built from the Log Explorer) are billed based on ingestion - See [sku](https://cloud.google.com/skus/sku-groups/cloud-monitoring) and [here](https://cloud.google.com/skus/?currency=USD&filter=A924-09D0-8854)
   - See the following links which define what is exactly "pulled through" as a default metric for GCS resources
 <br>
 
