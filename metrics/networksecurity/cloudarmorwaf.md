@@ -17,7 +17,9 @@ In this example, I use the GCS Network Security Policy resource for CloudArmor W
 
 <br>
 
-![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/acc9c2a5-b8d1-4989-b96e-ad7a23301211)
+![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/9301eb2a-6aa6-427d-9c07-c8147a61268f)
+
+- Problem here, is that the default metric's do not pull in what we are looking for specifically
 
 ## Creating the Base Logging Query to Build From:
 
@@ -60,6 +62,8 @@ jsonPayload.previewSecurityPolicy.preconfiguredExprIds=~".*" -- What syntax or C
 ```
 
 This means, through a metric we can now pull these metadata endpoints into a dashboard
+
+![image](https://github.com/GangGreenTemperTatum/gcp-log-explorer/assets/104169244/acc9c2a5-b8d1-4989-b96e-ad7a23301211)
 
 - Be as specific as possible to reduce ingestion costs here
   - Define exactly what you look to monitor/report and alert on 
