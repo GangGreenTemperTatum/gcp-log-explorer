@@ -1,3 +1,17 @@
+# ❗**Update:**
+
+- I stopped this project as I eventually ran into [this issue](https://cloud.google.com/logging/docs/logs-based-metrics/troubleshooting#too-many-time-series). 
+- The cardinality problem is a label combination limit..  `count(label_A) * count(label_B) * ... * count(label_N)` must be under 30000 (`<=299991`), otherwise data points start getting lost and not recorded.
+- This is not possible with a WAF due to high cardinality fields concatenated from things such as `serverIP` and `remoteIP`
+- If it's done with custom log metrics, the better pattern is probably to use the Metrics dashboard to track the incidents at a macro level `(by type)` and then use the Logs Explorer to drill down and filter the low level data... and for example use those `remoteIP` sidebar breakdowns and similar to find the contributors.
+- A way around this would be to edit the filter example below for logging query and reduce the # of labels from the metrics, but would not provide sufficient data in my opinion to present in a dashboard
+- I was able to see the `metrics.label` populate when editing dashboard panes, but simply no data was displayed
+- Within the dashboard panes when attempting to configure custom graphs, I also had to amend the `fetch` nested `metric` value from CloudArmor WAF default `'| metric networksecurity.googleapis.com/https/request_count'` to `| metric 'logging.googleapis.com/user/<metric-name>` for these fields to populate from my custom metric
+
+- Look's like this is not possible and would recommend a SIEM or log aggregation tool to achieve this
+
+# Prior Work:
+
 ## Summary of pulling stats into GCS Monitoring Dashboards via Metrics:
 
 In this example, I use the GCS Network Security Policy resource for CloudArmor WAF
