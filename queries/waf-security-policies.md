@@ -77,6 +77,24 @@ resource.type="http_load_balancer"
 jsonPayload.previewSecurityPolicy.outcome="DENY"
 ```
 
+- Example from [my repo](https://github.com/GangGreenTemperTatum/gcp-cloud-armor-lab/blob/940b71c2703f92e50c5a1111a6c1ca52bc7dc0b8/variables.tf#L87) of ensuring rate-limiting policies would only capturing the specific intentionally matched endpoints for rate-limiting clients and as such can be moved to `preview = false` once confident
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(<security-policy-name>)
+-- Look for rules with ID's #4000, through #4010
+jsonPayload.previewSecurityPolicy.priority="4000" --&& jsonPayload.previewSecurityPolicy.priority<="4010"
+
+-- Match traffic not under the `allow` conform which means its within acceptable deemed limits per the rule config
+-- -jsonPayload.previewSecurityPolicy.rateLimitAction.outcome="RATE_LIMIT_THRESHOLD_CONFORM"
+-- Or, include matching traffic for the exceed_action as a positive match
+-- jsonPayload.previewSecurityPolicy.rateLimitAction.outcome="RATE_LIMIT_THRESHOLD_EXCEED"
+
+timestamp>="2023-06-08T00:00:00Z" AND timestamp<="2023-06-22T00:02:00Z"
+
+-- Reduce logs for traffic matching the intentional endpoints as per the security policy rule, to ensure no other endpoints are being consumed as a false positive
+-httpRequest.requestUrl=~"RegisterWithEmail" OR httpRequest.requestUrl=~"InviteUser" OR httpRequest.requestUrl=~"RequestPasswordReset"
+```
+
 # [Detect Log4Shell Security Exploits](https://cloud.google.com/logging/docs/log4j2-vulnerability):
 
 ```
