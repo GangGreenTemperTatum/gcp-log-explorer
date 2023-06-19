@@ -77,6 +77,18 @@ resource.type="http_load_balancer"
 jsonPayload.previewSecurityPolicy.outcome="DENY"
 ```
 
+# Security Policy Rule Outcomes Matching "`.wp`" URL's requested (I.E, potential scrapers or crawlers looking for `.wp` file extension (WordPress))
+
+- [Tips and tricks for using new RegEx support in Cloud Logging](https://cloud.google.com/blog/products/management-tools/cloud-logging-gets-regular-expression-support)
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(<security-policy-name>)
+-jsonPayload.previewSecurityPolicy.priority="201"
+httpRequest.requestUrl =~ "\.wp$"
+timestamp>="2023-06-12T00:00:00Z" -- AND timestamp<="2023-06-12T00:00:00Z"
+--httpRequest.status!="404" || httpRequest.status!="400" || httpRequest.status!="415"
+```
+
 - Example from [my repo](https://github.com/GangGreenTemperTatum/gcp-cloud-armor-lab/blob/940b71c2703f92e50c5a1111a6c1ca52bc7dc0b8/variables.tf#L87) of ensuring rate-limiting policies would only capturing the specific intentionally matched endpoints for rate-limiting clients and as such can be moved to `preview = false` once confident
 
 ```
