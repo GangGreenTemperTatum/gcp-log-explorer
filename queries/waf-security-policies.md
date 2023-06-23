@@ -77,6 +77,24 @@ resource.type="http_load_balancer"
 jsonPayload.previewSecurityPolicy.outcome="DENY"
 ```
 
+# Security Policies Preview (Would be Denied by CloudArmor) for Rate Limiting:
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(<security-policy-name>)
+-- Look for rules with ID's #4000, through #4010
+jsonPayload.previewSecurityPolicy.priority="4000" --&& jsonPayload.previewSecurityPolicy.priority<="4010"
+
+-- Match traffic not under the `allow` conform which means its within acceptable deemed limits per the rule config
+-- -jsonPayload.previewSecurityPolicy.rateLimitAction.outcome="RATE_LIMIT_THRESHOLD_CONFORM"
+-- Or, include matching traffic for the exceed_action as a positive match
+jsonPayload.previewSecurityPolicy.rateLimitAction.outcome="RATE_LIMIT_THRESHOLD_EXCEED"
+
+timestamp>="2023-06-10T00:00:00Z" AND timestamp<="2023-06-24T00:02:00Z"
+
+-- Reduce logs for traffic matching the intentional endpoints as per the security policy rule, to ensure no other endpoints are being consumed as a false positive
+-httpRequest.requestUrl=~"x" OR httpRequest.requestUrl=~"y" OR httpRequest.requestUrl=~"z"
+```
+
 # Security Policy Rule Outcomes Matching "`.wp`" URL's requested (I.E, potential scrapers or crawlers looking for `.wp` file extension (WordPress))
 
 - [Tips and tricks for using new RegEx support in Cloud Logging](https://cloud.google.com/blog/products/management-tools/cloud-logging-gets-regular-expression-support)
