@@ -166,10 +166,21 @@ timestamp >= "2023-04-13T08:00:00Z" AND timestamp <= "2023-04-15"
 -- httpRequest.responseSize>="10000"
 ```
 
-# :
+# GCP Key Network and Security Metrics:
+
+# Sample Rate Alerting Match when 5% of all Requests are Blocked via Policy:
+
+A key metric is `network_security_policy::networksecurity.googleapis.com/https/request_count` and the values of interest are `resource.ID`, `resource.policy_name` and `blocked` (metric boolean).
+You can use the `filter_ratio_by` helper to get a good metric that is, for example, the ratio of blocked to total requests, using something like, setting your sampling windows/etc as needed (here: 5% of all requests hitting a policy, are blocked)
+If you're just doing counts (number of blocked hits for example) you wont need any `ratio`. Your condition would just use absolute thresholds.
+The `condition` is to trigger the alerting, which would then hook up to your chatops per the usual approach you already have in place.
 
 ```
-code
+fetch network_security_policy::networksecurity.googleapis.com/https/request_count
+| filter_ratio_by [resource.policy_name], blocked == true()
+| align rate(2m)
+| every 2m
+| condition val() > 0.05  '1/s'
 ```
 
 # :
